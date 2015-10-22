@@ -45,8 +45,8 @@ public abstract class AbstractDozerP2BBeanConverter<PresentationBean extends Abs
 	private String SCOPE_COMPLETE = "default-scope-complete";
 	private String SCOPE_CUSTOM = "default-scope-custom";
 
-	private Converter<PresentationBean, BusinessBean> springConverter = (PresentationBean bean) -> { try { return this.convert(bean); } catch (Exception e) { throw new RuntimeException(e);}}; 
-	private Converter<BusinessBean, PresentationBean> springInverseConverter = (BusinessBean bean) -> { try { return this.convert(bean); } catch (Exception e) { throw new RuntimeException(e);}};
+	private Converter<PresentationBean, BusinessBean> springConverter = (PresentationBean bean) -> { try { return this.convert(bean); } catch (ConverterException e) { throw new RuntimeException(e);}}; 
+	private Converter<BusinessBean, PresentationBean> springInverseConverter = (BusinessBean bean) -> { try { return this.convert(bean); } catch (ConverterException e) { throw new RuntimeException(e);}};
 	
 	
 	public AbstractDozerP2BBeanConverter() {
@@ -54,87 +54,101 @@ public abstract class AbstractDozerP2BBeanConverter<PresentationBean extends Abs
 	}
 
 	@Override
-	public PresentationBean convert(BusinessBean bean) throws Exception {
+	public PresentationBean convert(BusinessBean bean) throws ConverterException {
 		return convert(bean, ConversionType.Complete);
 	}
 
 	@Override
 	public PresentationBean convert(BusinessBean businessBean,
-			ConversionType conversionType) throws Exception {
+			ConversionType conversionType) throws ConverterException {
         return convert(businessBean, getScope(conversionType));
 	}
 
     @Override
     public PresentationBean convert(BusinessBean businessBean,
-                                    String scope) throws Exception {
-        return ((Mapper) dozerBeanMapperFactoryBean.getObject()).map(
+                                    String scope) throws ConverterException {
+        try {
+        	return ((Mapper) dozerBeanMapperFactoryBean.getObject()).map(
                 businessBean, presentationBeanClass, scope);
+        } catch (Exception e) {
+        	throw new ConverterException(e);
+        }
     }
 
 
 	@Override
 	public void convert(final BusinessBean businessBean,
-			PresentationBean presentationBean) throws Exception {
+			PresentationBean presentationBean) throws ConverterException {
 		convert(businessBean, presentationBean, ConversionType.Complete);
 	}
 
 	@Override
 	public void convert(final BusinessBean businessBean,
 			PresentationBean presentationBean, ConversionType conversionType)
-			throws Exception {
+			throws ConverterException {
         convert(businessBean, presentationBean, getScope(conversionType));
 	}
 
     @Override
     public void convert(final BusinessBean businessBean,
                         PresentationBean presentationBean, String scope)
-            throws Exception {
-        ((Mapper) dozerBeanMapperFactoryBean.getObject()).map(businessBean,
+            throws ConverterException {
+    	try {
+    		((Mapper) dozerBeanMapperFactoryBean.getObject()).map(businessBean,
                 presentationBean, scope);
+        } catch (Exception e) {
+        	throw new ConverterException(e);
+        }
     }
 
 	@Override
-	public BusinessBean convert(PresentationBean bean) throws Exception {
+	public BusinessBean convert(PresentationBean bean) throws ConverterException {
 		return convert(bean, ConversionType.Complete);
 	}
 
 	@Override
 	public void convert(final PresentationBean presentationBean,
-			BusinessBean businessBean) throws Exception {
+			BusinessBean businessBean) throws ConverterException {
 		convert(presentationBean, businessBean, ConversionType.Complete);
 	}
 
 	@Override
 	public void convert(final PresentationBean presentationBean,
 			BusinessBean businessBean, ConversionType conversionType)
-			throws Exception {
+			throws ConverterException {
         convert(presentationBean, businessBean, getScope(conversionType));
 	}
 
     @Override
     public void convert(final PresentationBean presentationBean,
                         BusinessBean businessBean, String scope)
-            throws Exception {
-        ((Mapper) dozerBeanMapperFactoryBean.getObject()).map(presentationBean,
-                businessBean, scope);
+            throws ConverterException {
+        try {
+        	((Mapper) dozerBeanMapperFactoryBean.getObject()).map(presentationBean,businessBean, scope);
+        } catch (Exception e) {
+        	throw new ConverterException(e);
+        }
     }
 
 	@Override
 	public BusinessBean convert(PresentationBean presentationBean,
-			ConversionType conversionType) throws Exception {
+			ConversionType conversionType) throws ConverterException {
 		return convert(presentationBean, getScope(conversionType));
 	}
 
     @Override
     public BusinessBean convert(PresentationBean presentationBean,
-                                String scope) throws Exception {
-        return ((Mapper) dozerBeanMapperFactoryBean.getObject()).map(
-                presentationBean, businessBeanClass, scope);
+                                String scope) throws ConverterException {
+        try {
+        	return ((Mapper) dozerBeanMapperFactoryBean.getObject()).map(presentationBean, businessBeanClass, scope);
+        } catch (Exception e) {
+        	throw new ConverterException(e);
+        }
     }
 
 	@Override
 	public List<PresentationBean> convertBusinessList(
-			List<BusinessBean> businessBeans) throws Exception {
+			List<BusinessBean> businessBeans) throws ConverterException {
 		List<PresentationBean> presentationBeans = new ArrayList<PresentationBean>();
 		for (BusinessBean businessBean : businessBeans) {
 			PresentationBean presentationBean = convert(businessBean,
@@ -147,29 +161,33 @@ public abstract class AbstractDozerP2BBeanConverter<PresentationBean extends Abs
 	@Override
 	public List<PresentationBean> convertBusinessList(
 			List<BusinessBean> businessBeans, ConversionType conversionType)
-			throws Exception {
+			throws ConverterException {
         return convertBusinessList(businessBeans, getScope(conversionType));
 	}
 
     @Override
     public List<PresentationBean> convertBusinessList(
             List<BusinessBean> businessBeans, String scope)
-            throws Exception {
+            throws ConverterException {
         List<PresentationBean> presentationBeans = new ArrayList<PresentationBean>();
-        for (BusinessBean businessBean : businessBeans) {
-            PresentationBean presentationBean = ((Mapper) dozerBeanMapperFactoryBean
-                    .getObject()).map(businessBean, presentationBeanClass,
-                    scope);
-            presentationBeans.add(presentationBean);
+        try {
+	        for (BusinessBean businessBean : businessBeans) {
+	            PresentationBean presentationBean = ((Mapper) dozerBeanMapperFactoryBean
+	                    .getObject()).map(businessBean, presentationBeanClass,
+	                    scope);
+	            presentationBeans.add(presentationBean);
+	        }
+        } catch (Exception e) {
+        	throw new ConverterException(e);
         }
         return presentationBeans;
     }
 
 	@Override
 	public void convertBusinessList(List<BusinessBean> businessBeans,
-			List<PresentationBean> presentationBeans) throws Exception {
+			List<PresentationBean> presentationBeans) throws ConverterException {
 		if (businessBeans.size() != presentationBeans.size()) {
-			throw new ListDiffersSizeException();
+			throw new ConverterException("List sizes differ");
 		}
 		for (int i = 0; i < businessBeans.size(); i++) {
 			convert(businessBeans.get(i), presentationBeans.get(i),
@@ -180,27 +198,31 @@ public abstract class AbstractDozerP2BBeanConverter<PresentationBean extends Abs
 	@Override
 	public void convertBusinessList(List<BusinessBean> businessBeans,
 			List<PresentationBean> presentationBeans,
-			ConversionType conversionType) throws Exception {
+			ConversionType conversionType) throws ConverterException {
         convertBusinessList(businessBeans, presentationBeans, getScope(conversionType));
 	}
 
     @Override
     public void convertBusinessList(List<BusinessBean> businessBeans,
                                     List<PresentationBean> presentationBeans,
-                                    String scope) throws Exception {
+                                    String scope) throws ConverterException {
         if (businessBeans.size() != presentationBeans.size()) {
-            throw new ListDiffersSizeException();
+            throw new ConverterException("List sizes differ");
         }
-        for (int i = 0; i < businessBeans.size(); i++) {
-            ((Mapper) dozerBeanMapperFactoryBean.getObject()).map(
-                    businessBeans.get(i), presentationBeans.get(i),
-                    scope);
+        try {
+	        for (int i = 0; i < businessBeans.size(); i++) {
+	            ((Mapper) dozerBeanMapperFactoryBean.getObject()).map(
+	                    businessBeans.get(i), presentationBeans.get(i),
+	                    scope);
+	        }
+        } catch (Exception e) {
+        	throw new ConverterException(e);
         }
     }
 
 	@Override
 	public List<BusinessBean> convertPresentationList(
-			List<PresentationBean> presentationBeans) throws Exception {
+			List<PresentationBean> presentationBeans) throws ConverterException {
 		List<BusinessBean> businessBeans = new ArrayList<BusinessBean>();
 		for (PresentationBean presentationBean : presentationBeans) {
 			BusinessBean businessBean = convert(presentationBean,
@@ -213,20 +235,24 @@ public abstract class AbstractDozerP2BBeanConverter<PresentationBean extends Abs
 	@Override
 	public List<BusinessBean> convertPresentationList(
 			List<PresentationBean> presentationBeans,
-			ConversionType conversionType) throws Exception {
+			ConversionType conversionType) throws ConverterException {
         return convertPresentationList(presentationBeans, getScope(conversionType));
 	}
 
     @Override
     public List<BusinessBean> convertPresentationList(
             List<PresentationBean> presentationBeans,
-            String scope) throws Exception {
+            String scope) throws ConverterException {
         List<BusinessBean> businessBeans = new ArrayList<BusinessBean>();
-        for (PresentationBean presentationBean : presentationBeans) {
-            BusinessBean businessBean = ((Mapper) dozerBeanMapperFactoryBean
-                    .getObject()).map(presentationBean, businessBeanClass,
-                    scope);
-            businessBeans.add(businessBean);
+        try {
+	        for (PresentationBean presentationBean : presentationBeans) {
+	            BusinessBean businessBean = ((Mapper) dozerBeanMapperFactoryBean
+	                    .getObject()).map(presentationBean, businessBeanClass,
+	                    scope);
+	            businessBeans.add(businessBean);
+	        }
+        } catch (Exception e) {
+        	throw new ConverterException(e);
         }
         return businessBeans;
     }
@@ -234,9 +260,9 @@ public abstract class AbstractDozerP2BBeanConverter<PresentationBean extends Abs
 	@Override
 	public void convertPresentationList(
 			List<PresentationBean> presentationBeans,
-			List<BusinessBean> businessBeans) throws Exception {
+			List<BusinessBean> businessBeans) throws ConverterException {
 		if (presentationBeans.size() != businessBeans.size()) {
-			throw new ListDiffersSizeException();
+			throw new ConverterException("List sizes differ");
 		}
 		for (int i = 0; i < presentationBeans.size(); i++) {
 			convert(presentationBeans.get(i), businessBeans.get(i),
@@ -248,7 +274,7 @@ public abstract class AbstractDozerP2BBeanConverter<PresentationBean extends Abs
 	public void convertPresentationList(
 			List<PresentationBean> presentationBeans,
 			List<BusinessBean> businessBeans, ConversionType conversionType)
-			throws Exception {
+			throws ConverterException {
         convertPresentationList(presentationBeans, businessBeans, getScope(conversionType));
 	}
 
@@ -256,15 +282,19 @@ public abstract class AbstractDozerP2BBeanConverter<PresentationBean extends Abs
     public void convertPresentationList(
             List<PresentationBean> presentationBeans,
             List<BusinessBean> businessBeans, String scope)
-            throws Exception {
+            throws ConverterException {
 
         if (presentationBeans.size() != businessBeans.size()) {
-            throw new ListDiffersSizeException();
+            throw new ConverterException("List sizes differ");
         }
-        for (int i = 0; i < presentationBeans.size(); i++) {
-            ((Mapper) dozerBeanMapperFactoryBean.getObject()).map(
-                    presentationBeans.get(i), businessBeans.get(i),
-                    scope);
+        try {
+	        for (int i = 0; i < presentationBeans.size(); i++) {
+	            ((Mapper) dozerBeanMapperFactoryBean.getObject()).map(
+	                    presentationBeans.get(i), businessBeans.get(i),
+	                    scope);
+	        }
+        } catch (Exception e) {
+        	throw new ConverterException(e);
         }
     }
 
