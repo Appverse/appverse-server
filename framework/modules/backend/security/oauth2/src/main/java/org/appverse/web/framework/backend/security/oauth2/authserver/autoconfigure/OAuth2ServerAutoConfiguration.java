@@ -2,7 +2,7 @@
  Copyright (c) 2012 GFT Appverse, S.L., Sociedad Unipersonal.
 
  This Source Code Form is subject to the terms of the Appverse Public License 
- Version 2.0 (“APL v2.0”). If a copy of the APL was not distributed with this 
+ Version 2.0 (â€œAPL v2.0â€�). If a copy of the APL was not distributed with this 
  file, You can obtain one at http://www.appverse.mobi/licenses/apl_v2.0.pdf. [^]
 
  Redistribution and use in source and binary forms, with or without modification, 
@@ -24,7 +24,10 @@
 package org.appverse.web.framework.backend.security.oauth2.authserver.autoconfigure;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.embedded.FilterRegistrationBean;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
@@ -35,5 +38,28 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnProperty(value="appverse.frontfacade.oauth2.apiprotection.enabled", matchIfMissing=false)
 @ComponentScan("org.appverse.web.framework.backend.security.oauth2.authserver.configuration")
 public class OAuth2ServerAutoConfiguration {
+	
+	/**
+	 * Tomcat request dumper.
+	 * By default disabled. Coditional on running in Tomcat.
+	 * appverse-web-modules-frontfacade-mvc adds this filter also, however you might implement
+	 * an auth provider without using the appverse-web-modules-frontfacade-mvc starter.
+	 * This is the reason why the filter setup is added here also.
+	 */
+	@Bean
+	@ConditionalOnProperty(value="appverse.frontfacade.rest.debug.requestdumper.enabled", matchIfMissing=false)
+	@ConditionalOnClass(org.apache.catalina.filters.RequestDumperFilter.class)
+	public FilterRegistrationBean someFilterRegistration() {
+		FilterRegistrationBean registration = new FilterRegistrationBean();
+		registration.setFilter(requestDumperFilter());
+		return registration;
+	}
+
+	@Bean(name = "requestDumperFilter")
+	@ConditionalOnProperty(value="appverse.frontfacade.rest.debug.requestdumper.enabled", matchIfMissing=false)
+	@ConditionalOnClass(org.apache.catalina.filters.RequestDumperFilter.class)
+	public org.apache.catalina.filters.RequestDumperFilter requestDumperFilter() {
+		return new org.apache.catalina.filters.RequestDumperFilter();
+	}
 
 }

@@ -2,7 +2,7 @@
  Copyright (c) 2012 GFT Appverse, S.L., Sociedad Unipersonal.
 
  This Source Code Form is subject to the terms of the Appverse Public License
- Version 2.0 (“APL v2.0”). If a copy of the APL was not distributed with this
+ Version 2.0 (â€œAPL v2.0â€�). If a copy of the APL was not distributed with this
  file, You can obtain one at http://www.appverse.mobi/licenses/apl_v2.0.pdf. [^]
 
  Redistribution and use in source and binary forms, with or without modification,
@@ -29,6 +29,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
+import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -99,5 +100,26 @@ public class FrontFacadeRestAutoConfiguration {
 	@Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
 	@ConditionalOnProperty(value="appverse.frontfacade.rest.http.basic.default.setup.enabled", matchIfMissing=true)
 	protected static class AppverseWebHttpBasicConfiguration extends AppverseWebHttpBasicConfigurerAdapter {
+	}
+	
+	/**
+	 * Tomcat request dumper.
+	 * By default disabled.
+	 * Coditional on running in Tomcat
+	 */
+	@Bean
+	@ConditionalOnProperty(value="appverse.frontfacade.rest.debug.requestdumper.enabled", matchIfMissing=false)
+	@ConditionalOnClass(org.apache.catalina.filters.RequestDumperFilter.class)
+	public FilterRegistrationBean someFilterRegistration() {
+		FilterRegistrationBean registration = new FilterRegistrationBean();
+		registration.setFilter(requestDumperFilter());
+		return registration;
+	}
+
+	@Bean(name = "requestDumperFilter")
+	@ConditionalOnProperty(value="appverse.frontfacade.rest.debug.requestdumper.enabled", matchIfMissing=false)
+	@ConditionalOnClass(org.apache.catalina.filters.RequestDumperFilter.class)
+	public org.apache.catalina.filters.RequestDumperFilter requestDumperFilter() {
+		return new org.apache.catalina.filters.RequestDumperFilter();
 	}
 }
