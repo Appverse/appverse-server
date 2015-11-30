@@ -107,7 +107,6 @@
 		<dependency>
     		<groupId>io.springfox</groupId>
     		<artifactId>springfox-swagger2</artifactId>
-    		<version>2.2.2</version>
 		</dependency>
 		<!-- 
 		<dependency>
@@ -119,12 +118,10 @@
 		<dependency>
     		<groupId>io.springfox</groupId>
     		<artifactId>springfox-swagger-ui</artifactId>
-    		<version>2.2.2</version>
 		</dependency>
 		<dependency>
     		<groupId>io.swagger</groupId>
     		<artifactId>swagger-core</artifactId>
-    		<version>1.5.3</version>
 		</dependency>
 
 		<!-- <dependency>
