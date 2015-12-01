@@ -163,7 +163,7 @@
 		The property spring.version is specified in spring-boot-dependencies which appverse imports. However only dependency management is imported, 
 		not properties. If we extended the starter-parent which in turn extends appverse-dependencies then the variable would be included.
 		But we don't want to extend this poms. -->
-		<spring.version>4.2.0.RELEASE</spring.version>
+		<spring.version>4.2.3.RELEASE</spring.version>
 		
 		
 		<resource.delimiter>@</resource.delimiter> <!-- delimiter that doesn't clash with Spring ${} placeholders -->
@@ -173,7 +173,7 @@
 	
 		<framework.version>2.0.0-SNAPSHOT</framework.version>
 
-		<spring.boot.version>1.3.0.M5</spring.boot.version>
+		<spring.boot.version>1.3.0.RELEASE</spring.boot.version>
         <spring.oauth2.version>2.0.7.RELEASE</spring.oauth2.version>
 		<spring.data.rest.version>2.4.1.RELEASE</spring.data.rest.version>
 
