@@ -27,7 +27,6 @@ import javax.sql.DataSource;
 
 import org.appverse.web.framework.backend.security.oauth2.authserver.token.enhancers.PrincipalCredentialsTokenEnhancer;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -77,11 +76,13 @@ public class AuthorizationServerWithJDBCStoreConfigurerAdapter extends Authoriza
 		@Autowired
 		protected DataSource dataSource;
 		
+		/* TODO: Customization of mappings is causing problems. Disabled by now.
 		@Value("${appverse.frontfacade.oauth2.tokenEndpoint.path:/oauth/token}")
 		protected String oauth2TokenEndpointPath;
 		
 		@Value("${appverse.frontfacade.oauth2.authorizeEndpoint.path:/oauth/authorize}")
 		protected String oauth2AuthorizeEndpointPath;
+		*/
 
 		protected BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();		
 
@@ -109,8 +110,10 @@ public class AuthorizationServerWithJDBCStoreConfigurerAdapter extends Authoriza
 		@Override
 		public void configure(AuthorizationServerEndpointsConfigurer endpoints)
 				throws Exception {
+			/* TODO: Customization of mappings is causing problems. Disabled by now.
 			endpoints.pathMapping("/oauth/token", oauth2TokenEndpointPath);			
 			endpoints.pathMapping("/oauth/authorize", oauth2AuthorizeEndpointPath);
+			*/
 			endpoints.authorizationCodeServices(authorizationCodeServices())
 					.authenticationManager(auth).tokenStore(tokenStore())
 					.tokenEnhancer(principalCredentialsTokenEnhancer())

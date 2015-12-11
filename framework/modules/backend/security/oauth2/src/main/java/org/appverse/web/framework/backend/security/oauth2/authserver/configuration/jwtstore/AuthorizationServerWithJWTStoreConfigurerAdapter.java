@@ -62,9 +62,11 @@ public class AuthorizationServerWithJWTStoreConfigurerAdapter extends Authorizat
 		private AuthenticationManager auth;
 		@Autowired
 		protected DataSource dataSource;		
+		/* TODO: Customization of mappings is causing problems. Disabled by now.
 		@Value("${appverse.frontfacade.oauth2.tokenEndpoint.path:/oauth/token}")
 		protected String oauth2TokenEndpointPath;
 		@Value("${appverse.frontfacade.oauth2.authorizeEndpoint.path:/oauth/authorize}")
+		*/
 		protected String oauth2AuthorizeEndpointPath;
 		@Value("${appverse.frontfacade.oauth2.jwt.jks.keystore}")
 		protected String oauthJwtKeystore;
@@ -109,9 +111,10 @@ public class AuthorizationServerWithJWTStoreConfigurerAdapter extends Authorizat
 		@Override
 		public void configure(AuthorizationServerEndpointsConfigurer endpoints)
 				throws Exception {
+			/* TODO: Customization of mappings is causing problems. Disabled by now.
 			endpoints.pathMapping("/oauth/token", oauth2TokenEndpointPath);			
 			endpoints.pathMapping("/oauth/authorize", oauth2AuthorizeEndpointPath);
-			
+			*/
 			endpoints.tokenStore(tokenStore())
 					 // TODO: We can't use this or the JWT token is not generated... .tokenEnhancer(principalCredentialsTokenEnhancer())
 					 .tokenEnhancer(jwtTokenEnhancer())
