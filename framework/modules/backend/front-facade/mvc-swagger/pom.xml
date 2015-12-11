@@ -70,15 +70,7 @@
 		<tag>master</tag>
 		<url>https://appverse.gftlabs.com/git/projects/APPVERSE/repos/appverse-java/</url>
 	</scm>	
-        
-	<repositories>
-		<repository>
-			<id>oss-jfrog-artifactory</id>
-			<name>oss-jfrog-artifactory-releases</name>
-			<url>http://oss.jfrog.org/artifactory/oss-release-local</url>
-		</repository>	
-	</repositories>
-	
+        	
 	<dependencies>		
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -94,27 +86,10 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-thymeleaf</artifactId>
 		</dependency>
-		<!-- Moving from swagger-springmvc 1.0.2 to sprinfox-swagger2  		
-		<dependency>
-			<groupId>com.mangofactory</groupId>
-			<artifactId>swagger-springmvc</artifactId>
-		</dependency>
-		-->
-
-		<!-- Last versions (i tested since 2.0.3) have a bug:
-		https://github.com/springfox/springfox/issues/767 affecting oauth2 on / off button
-		-->
 		<dependency>
     		<groupId>io.springfox</groupId>
     		<artifactId>springfox-swagger2</artifactId>
 		</dependency>
-		<!-- 
-		<dependency>
-    		<groupId>io.springfox</groupId>
-    		<artifactId>springfox-swagger1</artifactId>
-    		<version>2.2.2</version>
-		</dependency>
-		 -->
 		<dependency>
     		<groupId>io.springfox</groupId>
     		<artifactId>springfox-swagger-ui</artifactId>
@@ -123,13 +98,6 @@
     		<groupId>io.swagger</groupId>
     		<artifactId>swagger-core</artifactId>
 		</dependency>
-
-		<!-- <dependency>
-			<groupId>org.ajar</groupId>
-			<artifactId>swagger-spring-mvc-ui</artifactId>			
-		</dependency>
-		-->
-		
-		
 	</dependencies>
+	
 </project>
