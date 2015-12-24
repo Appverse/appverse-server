@@ -58,8 +58,10 @@ public class ResourceServerWithJWTStoreConfigurerAdapter extends ResourceServerC
     protected String apiPath;
 	@Value("${appverse.frontfacade.oauth2.logoutEndpoint.path:/sec/logout}")
 	protected String oauth2LogoutEndpointPath;
+	@Value("${appverse.frontfacade.swagger.cloud:false}")
+	protected boolean swaggerCloudMode;			
 	@Value("${appverse.frontfacade.swagger.enabled:true}")
-	protected boolean swagerEnabled;
+	protected boolean swagerEnabled;	
 	@Value("${appverse.frontfacade.swagger.oauth2.allowedUrls.antMatchers:/webjars/springfox-swagger-ui/**,/configuration/security,/configuration/ui,/swagger-resources,/api-docs/**,/v2/api-docs/**,/swagger-ui.html/**,/swaggeroauth2login,/o2c.html,/}")
 	protected String swaggerOauth2AllowedUrlsAntMatchers;	
 	@Value("${appverse.frontfacade.oauth2.jwt.jks.keystore}")
@@ -95,10 +97,15 @@ public class ResourceServerWithJWTStoreConfigurerAdapter extends ResourceServerC
         	.logoutSuccessHandler(oauth2LogoutHandler());
 
 		if (swagerEnabled){
-		// If swagger is enabled we need to permit certain URLs and resources for Swagger UI to work with OAuth2
-		http
-        	.authorizeRequests().antMatchers(swaggerOauth2AllowedUrlsAntMatchers.split(",")).permitAll();
+			if (!swaggerCloudMode){
+				// If swagger is enabled and we are not in 'cloud mode' (behind a Zuul OAuth2 enabled proxy)
+				// we need to permit certain URLs and resources for Swagger UI to work with OAuth2
+				http.authorizeRequests().antMatchers(swaggerOauth2AllowedUrlsAntMatchers.split(",")).permitAll();
+			}
 		}
+		else{
+			http.authorizeRequests().antMatchers(swaggerOauth2AllowedUrlsAntMatchers.split(",")).denyAll();
+		}		
 		http.authorizeRequests().anyRequest().authenticated();
 	}
 	
