@@ -59,10 +59,10 @@ public class SwaggerOAuth2Controller {
 	@Value("${appverse.frontfacade.oauth2.loginEndpoint.path:/oauth/authorize}")
 	private String oauth2LoginEndpoint;
 
-	@RequestMapping(value="/",method = RequestMethod.GET)
+	@RequestMapping(value="/", method = RequestMethod.GET)
 	public String showindexOAuth2LoginForm(Model model, HttpServletRequest req) {
 		model.addAttribute("swaggerClientId", swaggerClientId);
-		return "swagger-ui";
+		return "forward:swagger-ui.html";
 	}
 
 	@RequestMapping(value="/swaggeroauth2login",method = RequestMethod.GET)

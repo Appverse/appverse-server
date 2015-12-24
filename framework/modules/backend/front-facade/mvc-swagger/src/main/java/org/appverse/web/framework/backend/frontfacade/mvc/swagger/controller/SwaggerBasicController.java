@@ -39,8 +39,8 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class SwaggerBasicController {
 
-	@RequestMapping(value="/",method = RequestMethod.GET)
+	@RequestMapping(value="/", method = RequestMethod.GET)
 	public String showindexOAuth2LoginForm(Model model, HttpServletRequest req) {
-		return "swagger-ui";
+		return "forward:swagger-ui";
 	}
 }
