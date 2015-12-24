@@ -62,7 +62,7 @@ public class SwaggerOAuth2Controller {
 	@RequestMapping(value="/",method = RequestMethod.GET)
 	public String showindexOAuth2LoginForm(Model model, HttpServletRequest req) {
 		model.addAttribute("swaggerClientId", swaggerClientId);
-		return "redirect:swagger-ui.html";
+		return "swagger-ui";
 	}
 
 	@RequestMapping(value="/swaggeroauth2login",method = RequestMethod.GET)

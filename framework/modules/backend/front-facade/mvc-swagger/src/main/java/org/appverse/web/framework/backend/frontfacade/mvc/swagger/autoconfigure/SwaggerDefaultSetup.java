@@ -85,6 +85,10 @@ public class SwaggerDefaultSetup implements EnvironmentAware {
 	@Value("${appverse.frontfacade.swagger.oauth2.clientId:}")
 	private String swaggerClientId;
 	private RelaxedPropertyResolver propertyResolver;
+	@Value("${appverse.frontfacade.swagger.oauth2.disableOauth2SwaggerSupport:false}")
+	private boolean disableOauth2SwaggerSupport;
+	@Value("${appverse.frontfacade.swagger.oauth2.loginEndpoint:swaggeroauth2login}")
+	private String swaggerOAuth2LoginEndpoint;
 	
 	@Override
 	public void setEnvironment(Environment environment) {
@@ -103,7 +107,7 @@ public class SwaggerDefaultSetup implements EnvironmentAware {
 	public Docket apiDocumentationV2Security() {
 		Docket docket =  new Docket(DocumentationType.SWAGGER_2).groupName("default-group").apiInfo(apiInfo())
 				.select().paths(defaultGroup()).build();
-		if (oauth2Enabled) {
+		if (oauth2Enabled && !disableOauth2SwaggerSupport) {
 			// This causes duplicated contextpath in Swagger UI 
 			// .pathMapping(apiPath)
 			docket.securitySchemes(Arrays.asList(securitySchema()))
@@ -112,15 +116,25 @@ public class SwaggerDefaultSetup implements EnvironmentAware {
 		return docket;
 	}
 		
-	private OAuth securitySchema() {
-		LoginEndpoint loginEndpoint = new LoginEndpoint("swaggeroauth2login");
+	private OAuth securitySchema() {		
+		// TODO: LoginEndpoint needs to be parametrizable.
+		// The following works, we click the on swagger oauth2 switch but the problem is that as the 
+		// user is already authenticated (zuul redirects) then is automatically propagated. 
+		// Later there is a token mismatch.
+		// Possible solutions:
+		// 	1. Leave swagger-ui.html open so is not oauth2 protected, and thus Zuul will not redirect to the auth server. Then with swagger the user
+		//     will authenticate when clicking the swicth. -> This allows to test with swagger changing users easily, disadvantage: swagger-ui.html is opened, not protected
+		// (eventhough nobody will be able to do anything without authenticating)
+		//	2. Disable swagger oauth2 and see if Zuul proxy propagates well the headers and then everything works -> disadvantage: not easy to change users 
+		// to test with swagger, you need to logout completely...
+		LoginEndpoint loginEndpoint = new LoginEndpoint(swaggerOAuth2LoginEndpoint);
 		GrantType grantType = new ImplicitGrant(loginEndpoint, "access_token");
 		return new OAuth(SECURITY_SCHEMA_OAUTH2, Arrays.asList(getOauth2Scopes()), Arrays.asList(grantType));
 	}
 
 	private SecurityContext securityContext() {
 		SecurityContextBuilder builder = SecurityContext.builder();
-		if (oauth2Enabled){
+		if (oauth2Enabled && !disableOauth2SwaggerSupport){
 			List<SecurityReference> defaultOAuthSecurityReference = Arrays.asList(new SecurityReference(SECURITY_SCHEMA_OAUTH2, getOauth2Scopes()));
 			if (defaultOAuthSecurityReference != null){
 				builder.securityReferences(defaultOAuthSecurityReference);
