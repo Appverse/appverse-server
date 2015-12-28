@@ -37,7 +37,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Controller
-@ConditionalOnProperty(value="appverse.frontfacade.oauth2.apiprotection.enabled", matchIfMissing=false)
+@ConditionalOnProperty(value="appverse.frontfacade.swagger.oauth2.support.enabled", matchIfMissing=false)
 
 /**
  * Simple controller that just shows the Swagger OAuth2 login form where the user can enter they credentials

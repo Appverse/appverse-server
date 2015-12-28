@@ -80,13 +80,11 @@ public class SwaggerDefaultSetup implements EnvironmentAware {
 	
     @Value("${appverse.frontfacade.rest.api.basepath:/api}")
     private String apiPath;
-    @Value("${appverse.frontfacade.oauth2.apiprotection.enabled:false}")
-    private boolean oauth2Enabled;
+    @Value("${appverse.frontfacade.swagger.oauth2.support.enabled:false}")
+    private boolean swaggerOauth2SupportEnabled;
 	@Value("${appverse.frontfacade.swagger.oauth2.clientId:}")
 	private String swaggerClientId;
 	private RelaxedPropertyResolver propertyResolver;
-	@Value("${appverse.frontfacade.swagger.oauth2.disableOauth2SwaggerSupport:false}")
-	private boolean disableOauth2SwaggerSupport;
 	@Value("${appverse.frontfacade.swagger.oauth2.loginEndpoint:swaggeroauth2login}")
 	private String swaggerOAuth2LoginEndpoint;
 	
@@ -96,7 +94,7 @@ public class SwaggerDefaultSetup implements EnvironmentAware {
 	}
 	
 	@Bean
-	@ConditionalOnProperty(value="appverse.frontfacade.oauth2.apiprotection.enabled", matchIfMissing=false)
+	@ConditionalOnProperty(value="appverse.frontfacade.swagger.oauth2.support.enabled", matchIfMissing=false)
 	public SecurityConfiguration securityConfiguration(){
 		SecurityConfiguration config = new SecurityConfiguration(swaggerClientId, "NOT_USED", "oauth2-resource", swaggerClientId, "apiKey", ApiKeyVehicle.HEADER, SCOPES_SEPARATOR);
 		return config;
@@ -107,7 +105,7 @@ public class SwaggerDefaultSetup implements EnvironmentAware {
 	public Docket apiDocumentationV2Security() {
 		Docket docket =  new Docket(DocumentationType.SWAGGER_2).groupName("default-group").apiInfo(apiInfo())
 				.select().paths(defaultGroup()).build();
-		if (oauth2Enabled && !disableOauth2SwaggerSupport) {
+		if (swaggerOauth2SupportEnabled) {
 			// This causes duplicated contextpath in Swagger UI 
 			// .pathMapping(apiPath)
 			docket.securitySchemes(Arrays.asList(securitySchema()))
@@ -134,7 +132,7 @@ public class SwaggerDefaultSetup implements EnvironmentAware {
 
 	private SecurityContext securityContext() {
 		SecurityContextBuilder builder = SecurityContext.builder();
-		if (oauth2Enabled && !disableOauth2SwaggerSupport){
+		if (swaggerOauth2SupportEnabled){
 			List<SecurityReference> defaultOAuthSecurityReference = Arrays.asList(new SecurityReference(SECURITY_SCHEMA_OAUTH2, getOauth2Scopes()));
 			if (defaultOAuthSecurityReference != null){
 				builder.securityReferences(defaultOAuthSecurityReference);
