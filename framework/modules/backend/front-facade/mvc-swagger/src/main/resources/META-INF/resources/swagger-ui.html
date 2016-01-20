@@ -33,9 +33,7 @@
         	    someName: function() {
         	      // This function will get called /before/ each request
         	      // ... UNLESS you have a 'security' tag in the swagger.json file, in which case you must add 'someName' to the list of auths.
-        	      console.log('explore the request object...',this)
         	      var xsrfToken = getCookie("XSRF-TOKEN");  //Read xsrfToken cookie
-        	      console.log('XSRF-TOKEN cookie value...',this)
         	      this.headers['X-XSRF-TOKEN'] = xsrfToken;
         	      return true; // there is a bug, fixed but not in develop_2.0 where returning true will only process _one_ interceptor, you can leave this if it's your only interceptor and when the fix is in, it'll work as expected
         	    }
