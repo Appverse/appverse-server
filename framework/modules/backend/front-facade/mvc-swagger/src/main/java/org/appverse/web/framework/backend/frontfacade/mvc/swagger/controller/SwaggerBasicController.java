@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2012 GFT Appverse, S.L., Sociedad Unipersonal.
+Copyright (c) 2012 GFT Appverse, S.L., Sociedad Unipersonal.
 
  This Source Code Form is subject to the terms of the Appverse Public License 
  Version 2.0 (“APL v2.0�?). If a copy of the APL was not distributed with this 
@@ -32,15 +32,15 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import javax.servlet.http.HttpServletRequest;
 
 @Controller
-@ConditionalOnProperty(value="appverse.frontfacade.oauth2.apiprotection.enabled", havingValue="false", matchIfMissing=true)
+@ConditionalOnProperty(value="appverse.frontfacade.swagger.oauth2.support.enabled", havingValue="false", matchIfMissing=true)
 /**
  * Simple controller that redirect to the index view (thymeleaf template) when oauth2 is not used.
  * When oauth2 is used, an specific controller is required for swagger to be able to handle oauth2
  */
 public class SwaggerBasicController {
 
-	@RequestMapping(value="/",method = RequestMethod.GET)
+	@RequestMapping(value="/", method = RequestMethod.GET)
 	public String showindexOAuth2LoginForm(Model model, HttpServletRequest req) {
-		return "redirect:swagger-ui.html";
+		return "forward:swagger-ui.html";
 	}
 }
