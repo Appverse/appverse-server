@@ -32,83 +32,83 @@ import org.springframework.core.convert.converter.Converter;
 public interface IP2BBeanConverter<PresentationBean extends AbstractPresentationBean, BusinessBean extends AbstractBusinessBean>
 		extends IBeanConverter {
 
-	PresentationBean convert(BusinessBean businessBean) throws Exception;
+	PresentationBean convert(BusinessBean businessBean) throws ConverterException;
 
 	PresentationBean convert(BusinessBean businessBean,
-			ConversionType conversionType) throws Exception;
+			ConversionType conversionType) throws ConverterException;
 
     PresentationBean convert(BusinessBean businessBean,
-                             String scope) throws Exception;
+                             String scope) throws ConverterException;
 
 	void convert(BusinessBean businessBean, PresentationBean presentationBean)
-			throws Exception;
+			throws ConverterException;
 
 	void convert(BusinessBean businessBean, PresentationBean presentationBean,
-			ConversionType conversionType) throws Exception;
+			ConversionType conversionType) throws ConverterException;
 
     void convert(BusinessBean businessBean, PresentationBean presentationBean,
-                 String scope) throws Exception;
+                 String scope) throws ConverterException;
 
-	BusinessBean convert(PresentationBean presentationBean) throws Exception;
+	BusinessBean convert(PresentationBean presentationBean) throws ConverterException;
 
 	void convert(PresentationBean presentationBean, BusinessBean businessBean)
-			throws Exception;
+			throws ConverterException;
 
 	void convert(PresentationBean presentationBean, BusinessBean businessBean,
-			ConversionType conversionType) throws Exception;
+			ConversionType conversionType) throws ConverterException;
 
     void convert(PresentationBean presentationBean, BusinessBean businessBean,
-                 String scope) throws Exception;
+                 String scope) throws ConverterException;
 
 	BusinessBean convert(PresentationBean presentationBean,
-			ConversionType conversionType) throws Exception;
+			ConversionType conversionType) throws ConverterException;
 
     BusinessBean convert(PresentationBean presentationBean,
-                         String scope) throws Exception;
+                         String scope) throws ConverterException;
 
 	List<PresentationBean> convertBusinessList(List<BusinessBean> bean)
-			throws Exception;
+			throws ConverterException;
 
 	List<PresentationBean> convertBusinessList(
 			List<BusinessBean> businessBeans, ConversionType conversionType)
-			throws Exception;
+			throws ConverterException;
 
     List<PresentationBean> convertBusinessList(
             List<BusinessBean> businessBeans, String scope)
-            throws Exception;
+            throws ConverterException;
 
 	void convertBusinessList(List<BusinessBean> businessBean,
-			List<PresentationBean> presentationBean) throws Exception;
+			List<PresentationBean> presentationBean) throws ConverterException;
 
 	void convertBusinessList(List<BusinessBean> businessBean,
 			List<PresentationBean> presentationBean,
-			ConversionType conversionType) throws Exception;
+			ConversionType conversionType) throws ConverterException;
 
     void convertBusinessList(List<BusinessBean> businessBean,
                              List<PresentationBean> presentationBean,
-                             String scope) throws Exception;
+                             String scope) throws ConverterException;
 
 	List<BusinessBean> convertPresentationList(
-			List<PresentationBean> presentationBeans) throws Exception;
+			List<PresentationBean> presentationBeans) throws ConverterException;
 
 	List<BusinessBean> convertPresentationList(
 			List<PresentationBean> presentationBeans,
-			ConversionType conversionType) throws Exception;
+			ConversionType conversionType) throws ConverterException;
 
     List<BusinessBean> convertPresentationList(
             List<PresentationBean> presentationBeans,
-            String scope) throws Exception;
+            String scope) throws ConverterException;
 
 	void convertPresentationList(List<PresentationBean> presentationBean,
-			List<BusinessBean> businessBean) throws Exception;
+			List<BusinessBean> businessBean) throws ConverterException;
 
 	void convertPresentationList(List<PresentationBean> presentationBean,
 			List<BusinessBean> businessBean, ConversionType conversionType)
-			throws Exception;
+			throws ConverterException;
 
     void convertPresentationList(List<PresentationBean> presentationBean,
                                  List<BusinessBean> businessBean, String scope)
-            throws Exception;
+            throws ConverterException;
     
     
 	Converter<PresentationBean, BusinessBean> getSpringConverter();

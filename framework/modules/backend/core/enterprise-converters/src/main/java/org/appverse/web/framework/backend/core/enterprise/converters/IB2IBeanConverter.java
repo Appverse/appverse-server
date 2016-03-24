@@ -32,81 +32,81 @@ import org.springframework.core.convert.converter.Converter;
 public interface IB2IBeanConverter<BusinessBean extends AbstractBusinessBean, IntegrationBean extends AbstractIntegrationBean>
 		extends IBeanConverter {
 
-	IntegrationBean convert(BusinessBean businessBean) throws Exception;
+	IntegrationBean convert(BusinessBean businessBean) throws ConverterException;
 
 	IntegrationBean convert(BusinessBean businessBean,
-			ConversionType conversionType) throws Exception;
+			ConversionType conversionType) throws ConverterException;
 
     IntegrationBean convert(BusinessBean businessBean,
-                                   String scope) throws Exception;
+                                   String scope) throws ConverterException;
 
 	void convert(BusinessBean businessBean, IntegrationBean integrationBean)
-			throws Exception;
+			throws ConverterException;
 
 	void convert(BusinessBean businessBean, IntegrationBean integrationBean,
-			ConversionType conversionType) throws Exception;
+			ConversionType conversionType) throws ConverterException;
 
     void convert(final BusinessBean businessBean, IntegrationBean integrationBean, String scope)
-            throws Exception;
+            throws ConverterException;
 
-	BusinessBean convert(IntegrationBean integrationBean) throws Exception;
+	BusinessBean convert(IntegrationBean integrationBean) throws ConverterException;
 
 	void convert(IntegrationBean integrationBean, BusinessBean businessBean)
-			throws Exception;
+			throws ConverterException;
 
 	void convert(IntegrationBean integrationBean, BusinessBean businessBean,
-			ConversionType conversionType) throws Exception;
+			ConversionType conversionType) throws ConverterException;
 
     void convert(final IntegrationBean integrationBean,
-                        BusinessBean businessBean, String scope) throws Exception;
+                        BusinessBean businessBean, String scope) throws ConverterException;
 
 	BusinessBean convert(IntegrationBean integrationBean,
-			ConversionType conversionType) throws Exception;
+			ConversionType conversionType) throws ConverterException;
 
     BusinessBean convert(IntegrationBean integrationBean,
-                                String scope) throws Exception;
+                                String scope) throws ConverterException;
 
 	List<IntegrationBean> convertBusinessList(List<BusinessBean> businessBeans)
-			throws Exception;
+			throws ConverterException;
 
 	List<IntegrationBean> convertBusinessList(List<BusinessBean> businessBeans,
-			ConversionType conversionType) throws Exception;
+			ConversionType conversionType) throws ConverterException;
 
     List<IntegrationBean> convertBusinessList(
-            List<BusinessBean> businessBeans, String scope) throws Exception;
+            List<BusinessBean> businessBeans, String scope) throws ConverterException;
 
 	void convertBusinessList(final List<BusinessBean> businessBeans,
-			List<IntegrationBean> integrationBeans) throws Exception;
+			List<IntegrationBean> integrationBeans) throws ConverterException;
 
 	void convertBusinessList(final List<BusinessBean> businessBeans,
 			List<IntegrationBean> integrationBeans,
-			ConversionType conversionType) throws Exception;
+			ConversionType conversionType) throws ConverterException;
 
     void convertBusinessList(final List<BusinessBean> businessBeans,
                                     List<IntegrationBean> integrationBeans,
-                                    String scope) throws Exception;
+                                    String scope) throws ConverterException;
 
 	List<BusinessBean> convertIntegrationList(
-			List<IntegrationBean> integrationBeans) throws Exception;
+			List<IntegrationBean> integrationBeans) throws ConverterException;
 
 	List<BusinessBean> convertIntegrationList(
 			List<IntegrationBean> integrationBeans,
-			ConversionType conversionType) throws Exception;
+			ConversionType conversionType) throws ConverterException;
 
     List<BusinessBean> convertIntegrationList(
             List<IntegrationBean> integrationBeans,
-            String scope) throws Exception;
+            String scope) throws ConverterException;
 
 	void convertIntegrationList(final List<IntegrationBean> integrationBeans,
-			List<BusinessBean> businessBeans) throws Exception;
+			List<BusinessBean> businessBeans) throws ConverterException;
 
 	void convertIntegrationList(final List<IntegrationBean> integrationBeans,
 			List<BusinessBean> businessBeans, ConversionType conversionType)
-			throws Exception;
+			throws ConverterException;
 
     void convertIntegrationList(
             final List<IntegrationBean> integrationBeans,
-            List<BusinessBean> businessBeans, String scope) throws Exception;
+            List<BusinessBean> businessBeans, String scope) throws ConverterException;
     
     
 	Converter<BusinessBean, IntegrationBean> getSpringConverter();

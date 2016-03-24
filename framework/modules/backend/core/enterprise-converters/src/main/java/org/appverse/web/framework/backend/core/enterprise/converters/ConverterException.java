@@ -34,6 +34,7 @@ public class ConverterException extends AbstractException {
 		super();
 	}
 
+	
 	public ConverterException(String message) {
 		super(message);
 	}
@@ -44,5 +45,10 @@ public class ConverterException extends AbstractException {
 
 	public ConverterException(Throwable cause) {
 		super(cause);
+	}
+	
+	public ConverterException(String message, Throwable cause,
+			boolean enableSuppression, boolean writableStackTrace) {
+		super(message, cause, enableSuppression, writableStackTrace);
 	}
 }
