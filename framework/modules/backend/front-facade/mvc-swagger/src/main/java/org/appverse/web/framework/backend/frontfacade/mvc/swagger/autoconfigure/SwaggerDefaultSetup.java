@@ -96,7 +96,7 @@ public class SwaggerDefaultSetup implements EnvironmentAware {
 	@Bean
 	@ConditionalOnProperty(value="appverse.frontfacade.swagger.oauth2.support.enabled", matchIfMissing=false)
 	public SecurityConfiguration securityConfiguration(){
-		SecurityConfiguration config = new SecurityConfiguration(swaggerClientId, "NOT_USED", "oauth2-resource", swaggerClientId, "apiKey", ApiKeyVehicle.HEADER, SCOPES_SEPARATOR);
+		SecurityConfiguration config = new SecurityConfiguration(swaggerClientId, "NOT_USED", "oauth2-resource", swaggerClientId, "apiValue", ApiKeyVehicle.HEADER, "apiKey", SCOPES_SEPARATOR);
 		return config;
 	}
 
