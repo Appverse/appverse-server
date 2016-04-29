@@ -30,6 +30,7 @@ import java.util.List;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
@@ -42,6 +43,7 @@ import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.service.AuthorizationScope;
+import springfox.documentation.service.Contact;
 import springfox.documentation.service.GrantType;
 import springfox.documentation.service.ImplicitGrant;
 import springfox.documentation.service.LoginEndpoint;
@@ -172,11 +174,12 @@ public class SwaggerDefaultSetup implements EnvironmentAware {
 	}
 
 	private ApiInfo apiInfo() {
+		Contact contact = new Contact(propertyResolver.getProperty("contact.name"),propertyResolver.getProperty("contact.url"),propertyResolver.getProperty("contact.email"));
 		return new ApiInfoBuilder()
 				.title(propertyResolver.getProperty("title"))
 				.description(propertyResolver.getProperty("description"))
 				.termsOfServiceUrl(propertyResolver.getProperty("termsOfServiceUrl"))
-				.contact(propertyResolver.getProperty("contact"))
+				.contact(contact)
 				.license(propertyResolver.getProperty("license"))
 				.licenseUrl(propertyResolver.getProperty("licenseUrl"))
 				.version("version")
