@@ -1,8 +1,8 @@
-/*
-Copyright (c) 2012 GFT Appverse, S.L., Sociedad Unipersonal.
+package org.appverse.web.framework.backend.frontfacade.mvc.swagger.controller;/*
+ Copyright (c) 2012 GFT Appverse, S.L., Sociedad Unipersonal.
 
  This Source Code Form is subject to the terms of the Appverse Public License 
- Version 2.0 (“APL v2.0�?). If a copy of the APL was not distributed with this 
+ Version 2.0 (“APL v2.0”). If a copy of the APL was not distributed with this 
  file, You can obtain one at http://www.appverse.mobi/licenses/apl_v2.0.pdf. [^]
 
  Redistribution and use in source and binary forms, with or without modification, 
@@ -21,8 +21,8 @@ Copyright (c) 2012 GFT Appverse, S.L., Sociedad Unipersonal.
  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
  POSSIBILITY OF SUCH DAMAGE.
  */
-package org.appverse.web.framework.backend.frontfacade.mvc.swagger.controller;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -32,12 +32,17 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import javax.servlet.http.HttpServletRequest;
 
 @Controller
-@ConditionalOnProperty(value="appverse.frontfacade.swagger.oauth2.support.enabled", havingValue="false", matchIfMissing=true)
-/**
- * Simple controller that redirect to the index view (thymeleaf template) when oauth2 is not used.
- * When oauth2 is used, an specific controller is required for swagger to be able to handle oauth2
- */
-public class SwaggerBasicController {
+@ConditionalOnProperty(value="appverse.frontfacade.swagger.redirect.enabled", matchIfMissing=true)
+public class SwaggerRedirectController {
 
+    @Value("${appverse.frontfacade.swagger.oauth2.clientId:}")
+    private String swaggerClientId;
 
+    @RequestMapping(value="${appverse.frontfacade.swagger.redirect.path:/}", method = RequestMethod.GET)
+    public String showindexOAuth2LoginForm(Model model, HttpServletRequest req) {
+        if (swaggerClientId!=null && !"".equals(swaggerClientId)) {
+            model.addAttribute("swaggerClientId", swaggerClientId);
+        }
+        return "forward:swagger-ui.html";
+    }
 }

@@ -46,10 +46,10 @@ import java.util.Map;
  * The oauth2 login endpoint, clientId and redirection url are filled in the template.   
  */
 public class SwaggerOAuth2Controller {
-	
+	//clientId is a required value
 	@Value("${appverse.frontfacade.swagger.oauth2.clientId}")
 	private String swaggerClientId;
-	
+
 	@Value("${appverse.frontfacade.rest.api.basepath:/api}")
 	private String apiBasePath;
 	
@@ -58,12 +58,6 @@ public class SwaggerOAuth2Controller {
 	
 	@Value("${appverse.frontfacade.oauth2.loginEndpoint.path:/oauth/authorize}")
 	private String oauth2LoginEndpoint;
-
-	@RequestMapping(value="/", method = RequestMethod.GET)
-	public String showindexOAuth2LoginForm(Model model, HttpServletRequest req) {
-		model.addAttribute("swaggerClientId", swaggerClientId);
-		return "forward:swagger-ui.html";
-	}
 
 	@RequestMapping(value="/swaggeroauth2login",method = RequestMethod.GET)
 	public String showSwaggerOAuth2LoginForm(Model model, HttpServletRequest req) throws MalformedURLException{
