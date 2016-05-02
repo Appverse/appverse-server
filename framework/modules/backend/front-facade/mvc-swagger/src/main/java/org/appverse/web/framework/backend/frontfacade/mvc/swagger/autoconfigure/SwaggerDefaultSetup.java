@@ -39,6 +39,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 
+import org.thymeleaf.util.StringUtils;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.service.ApiInfo;
@@ -82,11 +83,14 @@ public class SwaggerDefaultSetup implements EnvironmentAware {
 	
     @Value("${appverse.frontfacade.rest.api.basepath:/api}")
     private String apiPath;
+	@Value("${appverse.frontfacade.swagger.host:}")
+	private String swaggerHost;
+	private RelaxedPropertyResolver propertyResolver;
+	//oauth2
     @Value("${appverse.frontfacade.swagger.oauth2.support.enabled:false}")
     private boolean swaggerOauth2SupportEnabled;
 	@Value("${appverse.frontfacade.swagger.oauth2.clientId:}")
 	private String swaggerClientId;
-	private RelaxedPropertyResolver propertyResolver;
 	@Value("${appverse.frontfacade.swagger.oauth2.loginEndpoint:swaggeroauth2login}")
 	private String swaggerOAuth2LoginEndpoint;
 	
@@ -104,9 +108,13 @@ public class SwaggerDefaultSetup implements EnvironmentAware {
 
 
 	@Bean
+	@ConditionalOnProperty(value="appverse.frontfacade.swagger.docket.enable", matchIfMissing=true)
 	public Docket apiDocumentationV2Security() {
-		Docket docket =  new Docket(DocumentationType.SWAGGER_2).groupName("default-group").apiInfo(apiInfo())
-				.select().paths(defaultGroup()).build();
+		Docket docket =  new Docket(DocumentationType.SWAGGER_2);
+		if (!StringUtils.isEmpty(swaggerHost)){
+			docket.host(swaggerHost);
+		}
+		docket.groupName("default-group").apiInfo(apiInfo()).select().paths(defaultGroup()).build();
 		if (swaggerOauth2SupportEnabled) {
 			// This causes duplicated contextpath in Swagger UI 
 			// .pathMapping(apiPath)

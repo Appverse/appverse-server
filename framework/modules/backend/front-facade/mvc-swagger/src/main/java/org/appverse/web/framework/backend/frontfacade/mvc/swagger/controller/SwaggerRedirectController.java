@@ -31,6 +31,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.http.HttpServletRequest;
 
+/**
+ * Simple controller that redirect to the index view (thymeleaf template).
+ */
 @Controller
 @ConditionalOnProperty(value="appverse.frontfacade.swagger.redirect.enabled", matchIfMissing=true)
 public class SwaggerRedirectController {
