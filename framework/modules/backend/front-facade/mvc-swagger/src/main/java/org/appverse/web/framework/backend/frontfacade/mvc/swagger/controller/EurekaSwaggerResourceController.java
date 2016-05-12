@@ -27,6 +27,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,6 +43,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Controller
+@Order(value = Ordered.HIGHEST_PRECEDENCE + 40)
 @ConditionalOnProperty(value="appverse.frontfacade.swagger.eureka.enabled", matchIfMissing=false)
 public class EurekaSwaggerResourceController {
     @Value("${appverse.frontfacade.swagger.eureka.default.group:default-group}")
@@ -48,7 +51,7 @@ public class EurekaSwaggerResourceController {
     @Value("${appverse.frontfacade.swagger.eureka.default.url:/v2/api-docs?group=default-group}")
     private String baseSwaggerDefaultUrl;
     @Value("${appverse.frontfacade.swagger.eureka.default.version:2.0}")
-    private String BASE_SWAGGER_VERSION;
+    private String baseSwaggerDefaultVersion;
 
 
     @Value("${appverse.frontfacade.swagger.eureka.exclusions}")
@@ -57,46 +60,53 @@ public class EurekaSwaggerResourceController {
     @Autowired(required = false)
     private DiscoveryClient discoveryClient;
 
+    private static String obtainUrlLocation(ServiceInstance instance, UriComponents current, String path){
+        String managementPath = "";
+        if (instance.getMetadata().containsKey("managementPath")) {
+            managementPath = instance.getMetadata().get("managementPath");
+        }
+        String hostUrl;
+        if (("https".equals(current.getScheme()) && 443 == current.getPort()) || ("http".equals(current.getScheme()) && 80 == current.getPort())) {
+            //default ports
+            hostUrl = String.format("%s://%s", current.getScheme(), current.getHost());
+        } else {
+            //custom ports
+            hostUrl = String.format("%s://%s:%d", current.getScheme(), current.getHost(), current.getPort());
+        }
+        return hostUrl + managementPath + path;
+    }
+
+    private static SwaggerResource createResource(String service, String urlLocation, String version){
+        SwaggerResource resource = new SwaggerResource();
+        resource.setName(service);
+        resource.setLocation(urlLocation);
+        resource.setSwaggerVersion(version);
+        return resource;
+    }
+
     @RequestMapping(value = "/swagger-resources", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<SwaggerResource> obtainServices(HttpServletRequest request){
         List<SwaggerResource> resources = new ArrayList<SwaggerResource>();
         if (discoveryClient != null) {
+            //eureka discovery cliend found
             List<String> services = discoveryClient.getServices();
-            UriComponents current = ServletUriComponentsBuilder.fromRequest(request).build();
-            for (String service : services) {
-                if (!eurekaSkipServices.isPresent() || !eurekaSkipServices.get().contains(service)) {
-                    List<ServiceInstance> instances = discoveryClient.getInstances(service);
-                    if (instances.size() != 0) {
-                        String urlLocation = baseSwaggerDefaultUrl;
-                        ServiceInstance instance = instances.get(0);
-                        String managementPath = "";
-                        if (instance.getMetadata().containsKey("managementPath")) {
-                            managementPath = instance.getMetadata().get("managementPath");
+            if (services != null && !services.isEmpty()) {
+                //there are some services
+                UriComponents current = ServletUriComponentsBuilder.fromRequest(request).build();
+                for (String service : services) {
+                    if (!eurekaSkipServices.isPresent() || !eurekaSkipServices.get().contains(service)) {
+                        List<ServiceInstance> instances = discoveryClient.getInstances(service);
+                        if (instances.size() != 0) {
+                            ServiceInstance instance = instances.get(0);
+                            String urlLocation = obtainUrlLocation(instance, current, baseSwaggerDefaultUrl);
+                            resources.add(createResource(service, urlLocation, baseSwaggerDefaultVersion));
                         }
-                        String hostUrl;
-                        if (("https".equals(current.getScheme()) && 443 == current.getPort()) || ("http".equals(current.getScheme()) && 80 == current.getPort())) {
-                            //default ports
-                            hostUrl = String.format("%s://%s", current.getScheme(), current.getHost());
-                        } else {
-                            //custom ports
-                            hostUrl = String.format("%s://%s:%d", current.getScheme(), current.getHost(), current.getPort());
-                        }
-                        urlLocation = hostUrl + managementPath + urlLocation;
-                        SwaggerResource resource = new SwaggerResource();
-                        resource.setName(service);
-                        resource.setLocation(urlLocation);
-                        resource.setSwaggerVersion(BASE_SWAGGER_VERSION);
-                        resources.add(resource);
                     }
                 }
             }
         }else{
             //return default swagger group
-            SwaggerResource resource = new SwaggerResource();
-            resource.setName(baseSwaggerDefaultGroup);
-            resource.setLocation(baseSwaggerDefaultUrl);
-            resource.setSwaggerVersion(BASE_SWAGGER_VERSION);
-            resources.add(resource);
+            resources.add(createResource(baseSwaggerDefaultGroup,baseSwaggerDefaultGroup,baseSwaggerDefaultVersion));
         }
 
         return resources;
