@@ -33,8 +33,10 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.util.UriComponents;
+import springfox.documentation.annotations.ApiIgnore;
 import springfox.documentation.swagger.web.SwaggerResource;
 
 import javax.servlet.http.HttpServletRequest;
@@ -42,9 +44,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@Controller
 @Order(value = Ordered.HIGHEST_PRECEDENCE + 40)
-@ConditionalOnProperty(value="appverse.frontfacade.swagger.eureka.enabled", matchIfMissing=false)
 public class EurekaSwaggerResourceController {
     @Value("${appverse.frontfacade.swagger.eureka.default.group:default-group}")
     private String baseSwaggerDefaultGroup;
@@ -54,8 +54,8 @@ public class EurekaSwaggerResourceController {
     private String baseSwaggerDefaultVersion;
 
 
-    @Value("${appverse.frontfacade.swagger.eureka.exclusions}")
-    private Optional<List<String>> eurekaSkipServices;
+    @Value("#{'${appverse.frontfacade.swagger.eureka.exclusions:}'.split(',')}")
+    private List<String> eurekaSkipServices;
 
     @Autowired(required = false)
     private DiscoveryClient discoveryClient;
@@ -84,8 +84,8 @@ public class EurekaSwaggerResourceController {
         return resource;
     }
 
-    @RequestMapping(value = "/swagger-resources", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<SwaggerResource> obtainServices(HttpServletRequest request){
+    @RequestMapping({"/swagger-resources"})
+    public @ResponseBody List<SwaggerResource> obtainServices(HttpServletRequest request){
         List<SwaggerResource> resources = new ArrayList<SwaggerResource>();
         if (discoveryClient != null) {
             //eureka discovery cliend found
@@ -94,7 +94,7 @@ public class EurekaSwaggerResourceController {
                 //there are some services
                 UriComponents current = ServletUriComponentsBuilder.fromRequest(request).build();
                 for (String service : services) {
-                    if (!eurekaSkipServices.isPresent() || !eurekaSkipServices.get().contains(service)) {
+                    if ((eurekaSkipServices!=null && eurekaSkipServices.get(0)!="") || !eurekaSkipServices.contains(service)) {
                         List<ServiceInstance> instances = discoveryClient.getInstances(service);
                         if (instances.size() != 0) {
                             ServiceInstance instance = instances.get(0);
