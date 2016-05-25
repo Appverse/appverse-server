@@ -64,7 +64,7 @@ public class EurekaSwaggerResourcesProvider implements SwaggerResourcesProvider 
             managementPath = instance.getMetadata().get("managementPath");
         }
         String hostUrl;
-        if (("https".equals(current.getScheme()) && 443 == current.getPort()) || ("http".equals(current.getScheme()) && 80 == current.getPort())) {
+        if (("https".equals(current.getScheme()) && 443 == current.getPort()) || ("http".equals(current.getScheme()) && 80 == current.getPort()) || -1 == current.getPort()) {
             //default ports
             hostUrl = String.format("%s://%s", current.getScheme(), current.getHost());
         } else {
