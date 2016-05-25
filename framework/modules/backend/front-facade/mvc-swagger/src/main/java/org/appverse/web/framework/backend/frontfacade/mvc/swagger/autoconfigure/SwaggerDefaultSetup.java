@@ -31,31 +31,29 @@ import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 
 
+import org.appverse.web.framework.backend.frontfacade.mvc.swagger.provider.EurekaSwaggerResourcesProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.core.env.Environment;
 
+import org.thymeleaf.spring4.util.SpringVersionUtils;
 import org.thymeleaf.util.StringUtils;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
-import springfox.documentation.service.ApiInfo;
-import springfox.documentation.service.AuthorizationScope;
-import springfox.documentation.service.Contact;
-import springfox.documentation.service.GrantType;
-import springfox.documentation.service.ImplicitGrant;
-import springfox.documentation.service.LoginEndpoint;
-import springfox.documentation.service.OAuth;
-import springfox.documentation.service.SecurityReference;
+import springfox.documentation.service.*;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spi.service.contexts.SecurityContext;
 import springfox.documentation.spi.service.contexts.SecurityContextBuilder;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger.web.ApiKeyVehicle;
 import springfox.documentation.swagger.web.SecurityConfiguration;
+import springfox.documentation.swagger.web.SwaggerResourcesProvider;
+import springfox.documentation.swagger.web.UiConfiguration;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 /**
@@ -85,6 +83,8 @@ public class SwaggerDefaultSetup implements EnvironmentAware {
     private String apiPath;
 	@Value("${appverse.frontfacade.swagger.host:}")
 	private String swaggerHost;
+	@Value("${appverse.frontfacade.swagger.tags:}")
+	private String tags;
 	private RelaxedPropertyResolver propertyResolver;
 	//oauth2
     @Value("${appverse.frontfacade.swagger.oauth2.support.enabled:false}")
@@ -93,7 +93,9 @@ public class SwaggerDefaultSetup implements EnvironmentAware {
 	private String swaggerClientId;
 	@Value("${appverse.frontfacade.swagger.oauth2.loginEndpoint:swaggeroauth2login}")
 	private String swaggerOAuth2LoginEndpoint;
-	
+
+
+
 	@Override
 	public void setEnvironment(Environment environment) {
 		this.propertyResolver = new RelaxedPropertyResolver(environment, "appverse.frontfacade.swagger.");
@@ -121,7 +123,14 @@ public class SwaggerDefaultSetup implements EnvironmentAware {
 			docket.securitySchemes(Arrays.asList(securitySchema()))
 					.securityContexts(Arrays.asList(securityContext()));
 		}
+
 		return docket;
+	}
+	@Bean
+	@Primary
+	@ConditionalOnProperty(value="appverse.frontfacade.swagger.eureka.enable", matchIfMissing=false)
+	public SwaggerResourcesProvider customResourcesProvider(){
+		return new EurekaSwaggerResourcesProvider();
 	}
 		
 	private OAuth securitySchema() {		
@@ -183,6 +192,7 @@ public class SwaggerDefaultSetup implements EnvironmentAware {
 
 	private ApiInfo apiInfo() {
 		Contact contact = new Contact(propertyResolver.getProperty("contact.name"),propertyResolver.getProperty("contact.url"),propertyResolver.getProperty("contact.email"));
+
 		return new ApiInfoBuilder()
 				.title(propertyResolver.getProperty("title"))
 				.description(propertyResolver.getProperty("description"))
@@ -209,4 +219,5 @@ public class SwaggerDefaultSetup implements EnvironmentAware {
 		}
 		return includePatterns.split(",");		 
 	}
+
 }
