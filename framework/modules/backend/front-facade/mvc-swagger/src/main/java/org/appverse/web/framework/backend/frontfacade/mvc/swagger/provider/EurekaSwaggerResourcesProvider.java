@@ -102,14 +102,19 @@ public class EurekaSwaggerResourcesProvider implements SwaggerResourcesProvider 
                     current = ServletUriComponentsBuilder.fromCurrentRequest().build();
                 }
                 for (String service : services) {
-                    if ((eurekaSkipServices!=null && eurekaSkipServices.get(0)!="") || !eurekaSkipServices.contains(service)) {
-                        List<ServiceInstance> instances = discoveryClient.getInstances(service);
-                        if (instances.size() != 0) {
-                            ServiceInstance instance = instances.get(0);
-                            String urlLocation = obtainUrlLocation(instance, current, baseSwaggerDefaultUrl, swaggerHost);
-                            resources.add(createResource(service, urlLocation, baseSwaggerDefaultVersion));
+                    if (eurekaSkipServices!=null && eurekaSkipServices.size()!=0){
+                        if (eurekaSkipServices.contains(service)){
+                            continue;
                         }
+
                     }
+                    List<ServiceInstance> instances = discoveryClient.getInstances(service);
+                    if (instances.size() != 0) {
+                        ServiceInstance instance = instances.get(0);
+                        String urlLocation = obtainUrlLocation(instance, current, baseSwaggerDefaultUrl, swaggerHost);
+                        resources.add(createResource(service, urlLocation, baseSwaggerDefaultVersion));
+                    }
+
                 }
             }
         }else{
