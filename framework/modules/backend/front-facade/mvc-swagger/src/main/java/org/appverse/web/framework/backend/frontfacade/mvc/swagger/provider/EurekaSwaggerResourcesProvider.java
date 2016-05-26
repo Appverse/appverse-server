@@ -49,6 +49,8 @@ public class EurekaSwaggerResourcesProvider implements SwaggerResourcesProvider 
     private String baseSwaggerDefaultUrl;
     @Value("${appverse.frontfacade.swagger.eureka.default.version:2.0}")
     private String baseSwaggerDefaultVersion;
+    @Value("${appverse.frontfacade.swagger.host:}")
+    private String swaggerHost;
 
 
     @Value("#{'${appverse.frontfacade.swagger.eureka.exclusions:}'.split(',')}")
@@ -58,18 +60,23 @@ public class EurekaSwaggerResourcesProvider implements SwaggerResourcesProvider 
     private DiscoveryClient discoveryClient;
 
 
-    private static String obtainUrlLocation(ServiceInstance instance, UriComponents current, String path){
+    private static  String obtainUrlLocation(ServiceInstance instance, UriComponents current, String path, String swaggerHost){
         String managementPath = "";
         if (instance.getMetadata().containsKey("managementPath")) {
             managementPath = instance.getMetadata().get("managementPath");
         }
         String hostUrl;
-        if (("https".equals(current.getScheme()) && 443 == current.getPort()) || ("http".equals(current.getScheme()) && 80 == current.getPort()) || -1 == current.getPort()) {
-            //default ports
-            hostUrl = String.format("//%s", current.getHost());
-        } else {
-            //custom ports
-            hostUrl = String.format("//%s:%d", current.getHost(), current.getPort());
+        if (swaggerHost!=null && swaggerHost.length()>0){
+            hostUrl=swaggerHost;
+        }else {
+            //tries to findout the host
+            if (("https".equals(current.getScheme()) && 443 == current.getPort()) || ("http".equals(current.getScheme()) && 80 == current.getPort()) || -1 == current.getPort()) {
+                //default ports
+                hostUrl = String.format("%s://%s", current.getScheme(), current.getHost());
+            } else {
+                //custom ports
+                hostUrl = String.format("%s://%s:%d", current.getScheme(), current.getHost(), current.getPort());
+            }
         }
         return hostUrl + managementPath + path;
     }
@@ -89,13 +96,17 @@ public class EurekaSwaggerResourcesProvider implements SwaggerResourcesProvider 
             List<String> services = discoveryClient.getServices();
             if (services != null && !services.isEmpty()) {
                 //there are some services
-                UriComponents current = ServletUriComponentsBuilder.fromCurrentRequest().build();
+                UriComponents current = null;
+                if (swaggerHost==null || swaggerHost.length()==0) {
+                    //obtain current uri from request
+                    current = ServletUriComponentsBuilder.fromCurrentRequest().build();
+                }
                 for (String service : services) {
                     if ((eurekaSkipServices!=null && eurekaSkipServices.get(0)!="") || !eurekaSkipServices.contains(service)) {
                         List<ServiceInstance> instances = discoveryClient.getInstances(service);
                         if (instances.size() != 0) {
                             ServiceInstance instance = instances.get(0);
-                            String urlLocation = obtainUrlLocation(instance, current, baseSwaggerDefaultUrl);
+                            String urlLocation = obtainUrlLocation(instance, current, baseSwaggerDefaultUrl, swaggerHost);
                             resources.add(createResource(service, urlLocation, baseSwaggerDefaultVersion));
                         }
                     }
