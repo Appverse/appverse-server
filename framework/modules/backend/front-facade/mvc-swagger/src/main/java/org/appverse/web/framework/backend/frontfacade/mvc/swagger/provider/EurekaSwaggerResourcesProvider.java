@@ -49,7 +49,7 @@ public class EurekaSwaggerResourcesProvider implements SwaggerResourcesProvider 
     private String baseSwaggerDefaultUrl;
     @Value("${appverse.frontfacade.swagger.eureka.default.version:2.0}")
     private String baseSwaggerDefaultVersion;
-    @Value("${appverse.frontfacade.swagger.host:}")
+    @Value("${appverse.frontfacade.swagger.eureka.host:}")
     private String swaggerHost;
 
 
