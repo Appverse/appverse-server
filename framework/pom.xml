@@ -179,7 +179,7 @@
 		<spring.data.rest.version>2.5.1.RELEASE</spring.data.rest.version>
 
         <dozer.version>5.5.1</dozer.version>
-		<springfox.swagger.version>2.5.0</springfox.swagger.version>
+		<springfox.swagger.version>2.4.0</springfox.swagger.version>
 		<swagger.version>1.5.5</swagger.version>
         <gwt.version>2.7.0</gwt.version>	
     </properties>
