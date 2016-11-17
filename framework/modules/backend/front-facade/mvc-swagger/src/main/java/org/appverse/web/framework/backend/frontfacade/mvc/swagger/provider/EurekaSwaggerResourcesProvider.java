@@ -40,8 +40,6 @@ import java.util.List;
 /**
  * Component Based on InMemorySwaggerResourcesProvider from  springfox
  */
-@ConditionalOnProperty(value="appverse.frontfacade.swagger.eureka.enable2", matchIfMissing=false)
-@Component
 public class EurekaSwaggerResourcesProvider implements SwaggerResourcesProvider {
     @Value("${appverse.frontfacade.swagger.eureka.default.group:default-group}")
     private String baseSwaggerDefaultGroup;
@@ -52,9 +50,11 @@ public class EurekaSwaggerResourcesProvider implements SwaggerResourcesProvider 
     @Value("${appverse.frontfacade.swagger.eureka.host:}")
     private String swaggerHost;
 
-
     @Value("#{'${appverse.frontfacade.swagger.eureka.exclusions:}'.split(',')}")
     private List<String> eurekaSkipServices;
+
+    @Value("${appverse.frontfacade.swagger.eureka.metadata-filter:false}")
+    private boolean metadataFilter;
 
     @Autowired(required = false)
     private DiscoveryClient discoveryClient;
@@ -111,8 +111,11 @@ public class EurekaSwaggerResourcesProvider implements SwaggerResourcesProvider 
                     List<ServiceInstance> instances = discoveryClient.getInstances(service);
                     if (instances.size() != 0) {
                         ServiceInstance instance = instances.get(0);
-                        String urlLocation = obtainUrlLocation(instance, current, baseSwaggerDefaultUrl, swaggerHost);
-                        resources.add(createResource(service, urlLocation, baseSwaggerDefaultVersion));
+                        //filters metadata called swagger
+                        if (!metadataFilter || instance.getMetadata().containsKey("swagger")) {
+                            String urlLocation = obtainUrlLocation(instance, current, baseSwaggerDefaultUrl, swaggerHost);
+                            resources.add(createResource(service, urlLocation, baseSwaggerDefaultVersion));
+                        }
                     }
 
                 }
